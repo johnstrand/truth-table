@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/truth-table/static/css/main.1c8cc3f7.chunk.css",
-    "main.js": "/truth-table/static/js/main.4ff4eb8b.chunk.js",
-    "main.js.map": "/truth-table/static/js/main.4ff4eb8b.chunk.js.map",
+    "main.js": "/truth-table/static/js/main.43190c93.chunk.js",
+    "main.js.map": "/truth-table/static/js/main.43190c93.chunk.js.map",
     "runtime-main.js": "/truth-table/static/js/runtime-main.82ad3eff.js",
     "runtime-main.js.map": "/truth-table/static/js/runtime-main.82ad3eff.js.map",
     "static/js/2.bc2ea6a1.chunk.js": "/truth-table/static/js/2.bc2ea6a1.chunk.js",
     "static/js/2.bc2ea6a1.chunk.js.map": "/truth-table/static/js/2.bc2ea6a1.chunk.js.map",
     "index.html": "/truth-table/index.html",
-    "precache-manifest.a22543a7647a9b8c2eb37e5012aca19b.js": "/truth-table/precache-manifest.a22543a7647a9b8c2eb37e5012aca19b.js",
+    "precache-manifest.3d62c293ff709364c18323254a89e186.js": "/truth-table/precache-manifest.3d62c293ff709364c18323254a89e186.js",
     "service-worker.js": "/truth-table/service-worker.js",
     "static/css/main.1c8cc3f7.chunk.css.map": "/truth-table/static/css/main.1c8cc3f7.chunk.css.map",
     "static/js/2.bc2ea6a1.chunk.js.LICENSE.txt": "/truth-table/static/js/2.bc2ea6a1.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.82ad3eff.js",
     "static/js/2.bc2ea6a1.chunk.js",
     "static/css/main.1c8cc3f7.chunk.css",
-    "static/js/main.4ff4eb8b.chunk.js"
+    "static/js/main.43190c93.chunk.js"
   ]
 }
