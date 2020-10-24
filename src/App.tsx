@@ -11,10 +11,10 @@ import Editor from "./Components/Editor";
 function App() {
   const [table, setTable] = useState<TruthTable>();
   const [error, setError] = useState("");
-
   const [code, setCode] = useDebouncedState("", 500);
 
   const parseExpression = () => {
+    // Code is empty, don't bother trying to run it
     if (!code) {
       return;
     }
@@ -22,10 +22,12 @@ function App() {
     try {
       const { tree, identifiers } = parse(code);
       const values = createGenerator(identifiers);
+
       const _table: TruthTable = {
         columns: identifiers,
         variants: [],
       };
+
       while (!values.done()) {
         const items = values.next();
         const result = evaluate(tree, items);
