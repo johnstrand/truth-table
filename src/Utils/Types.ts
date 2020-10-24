@@ -30,13 +30,14 @@ export type TokenType =
   | "AND"
   | "OR"
   | "XOR"
+  | "EQ"
   | "LPAREN"
   | "RPAREN"
   | "NOT"
   | "IDENT"
   | "EOF";
 
-export type BinaryTokenType = Extract<TokenType, "AND" | "OR" | "XOR">;
+export type BinaryTokenType = Extract<TokenType, "AND" | "OR" | "XOR" | "EQ">;
 
 export type SingleTokenType<T extends TokenType> = Extract<TokenType, T>;
 

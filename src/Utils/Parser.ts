@@ -73,7 +73,8 @@ export const parse = (code: string) => {
     return ident();
   };
 
-  const and = binarySyntax(not, "AND");
+  const eq = binarySyntax(not, "EQ");
+  const and = binarySyntax(eq, "AND");
   const xor = binarySyntax(and, "XOR");
   const or = binarySyntax(xor, "OR");
 

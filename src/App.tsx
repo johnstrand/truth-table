@@ -51,6 +51,7 @@ function App() {
         <span>Operators (in order of precedence):</span>
         <ul className="operator-list">
           <li>NOT: !</li>
+          <li>EQ: = (== and === are also permitted)</li>
           <li>AND: & (&& is also permitted)</li>
           <li>XOR: ^</li>
           <li>OR: | (|| is also permitted)</li>

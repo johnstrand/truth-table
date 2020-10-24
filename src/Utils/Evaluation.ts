@@ -23,11 +23,17 @@ const binaryOperationReducers: BinaryOperationReducer = {
   AND: (a, b) => a && b, // All values true
   OR: (a, b) => a || b, // At least one value true
   XOR: (a, b) => a !== b, // No values equal
+  EQ: (a, b) => a === b, // All values equal
 };
 
 export const evaluate = (tree: Syntax, state: State): Result => {
   // Is the type any kind of binary operation?
-  if (tree.type === "AND" || tree.type === "OR" || tree.type === "XOR") {
+  if (
+    tree.type === "AND" ||
+    tree.type === "OR" ||
+    tree.type === "XOR" ||
+    tree.type === "EQ"
+  ) {
     return binaryOperation(
       tree.type,
       tree.expressions,

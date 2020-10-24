@@ -41,6 +41,7 @@ const operators = new Map<string, TokenType>([
   [")", "RPAREN"],
   ["!", "NOT"],
   ["^", "XOR"],
+  ["=", "EQ"],
 ]);
 
 const operatorKeys = Array.from(operators.keys());
@@ -96,8 +97,13 @@ export const createTokenStream = (code: string): TokenStream => {
 
       if (stream.match(...operatorKeys)) {
         const operator = stream.previous();
-        if (operator === "|" || operator === "&") {
+        if (operator === "|" || operator === "&" || operator === "=") {
+          // Handle ||, &&, and ==
           stream.match(operator);
+          if (operator === "=") {
+            // Also handle ===
+            stream.match(operator);
+          }
         }
         return {
           type: operators.get(operator) as TokenType,
