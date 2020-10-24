@@ -1,15 +1,10 @@
+import { TokenStream, Token, TokenType } from "./Types";
+
 type CharStream = {
   next(): string;
   peek(): string;
   eof(): boolean;
   match(char: string): boolean;
-};
-
-export type TokenStream = {
-  next(): Token;
-  eof(): boolean;
-  match(type: TokenType): boolean;
-  expect<T extends Token>(type: T["type"]): T;
 };
 
 const createCharStream = (text: string): CharStream => {
@@ -38,21 +33,11 @@ const isWhitespace = (text: string) => {
   return text.length === 0 || text.match(/\s/);
 };
 
-const operators = new Set(["|", "&", "(", ")", "!"]);
+const operators = new Set(["|", "&", "(", ")", "!", "^"]);
 
 const isIdent = (text: string) => {
   return text.length > 0 && !isWhitespace(text) && !operators.has(text);
 };
-
-type TokenType = "AND" | "OR" | "LPAREN" | "RPAREN" | "NOT" | "IDENT" | "EOF";
-
-export interface Token {
-  type: TokenType;
-}
-
-export interface IdentToken extends Token {
-  name: string;
-}
 
 export const createTokenStream = (code: string): TokenStream => {
   const stream = createCharStream(code);
@@ -98,16 +83,22 @@ export const createTokenStream = (code: string): TokenStream => {
           type: "RPAREN",
         };
       } else if (stream.match("&")) {
+        stream.match("&"); // Permit &&
         return {
           type: "AND",
         };
       } else if (stream.match("|")) {
+        stream.match("|"); // Permit ||
         return {
           type: "OR",
         };
       } else if (stream.match("!")) {
         return {
           type: "NOT",
+        };
+      } else if (stream.match("^")) {
+        return {
+          type: "XOR",
         };
       } else {
         const ident: string[] = [];

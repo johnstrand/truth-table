@@ -4,6 +4,12 @@
 .visualize-children {
   padding-left: 20px;
 }
-.visualize-title {
-  /*padding: 10px;*/
+
+.error {
+  color: red;
+  padding-left: 10px;
+}
+
+.operator-list {
+  font-family: "Fira Code", monospace;
 }

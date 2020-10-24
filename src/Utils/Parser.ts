@@ -1,34 +1,28 @@
-import { createTokenStream, IdentToken, Token } from "./Tokenizer";
-
-type SyntaxKind = "AND" | "OR" | "LPAREN" | "RPAREN" | "NOT" | "IDENT" | "EOF";
-
-interface BinarySyntax {
-  type: Extract<SyntaxKind, "AND" | "OR">;
-  left: Syntax;
-  right: Syntax;
-}
-
-interface IdentifierSyntax {
-  type: Extract<SyntaxKind, "IDENT">;
-  name: string;
-}
-
-interface UnarySyntax {
-  type: Extract<SyntaxKind, "NOT">;
-  expression: Syntax;
-}
-
-export type Syntax = BinarySyntax | IdentifierSyntax | UnarySyntax;
+import { createTokenStream } from "./Tokenizer";
+import { Syntax, Token, IdentToken } from "./Types";
 
 export const parse = (code: string) => {
   const identifiers = new Set<string>();
   const tokens = createTokenStream(code);
 
   const or = (): Syntax => {
-    let left = and();
+    let left = xor();
     while (!tokens.eof() && tokens.match("OR")) {
       left = {
         type: "OR",
+        left,
+        right: xor(),
+      };
+    }
+
+    return left;
+  };
+
+  const xor = (): Syntax => {
+    let left = and();
+    while (!tokens.eof() && tokens.match("XOR")) {
+      left = {
+        type: "XOR",
         left,
         right: and(),
       };

@@ -23,7 +23,7 @@ const Table = ({ table }: Props) => {
             {table.columns.map((h) => (
               <td key={id()}>{v.values[h]?.toString()}</td>
             ))}
-            <td>{v.result.toString()}</td>
+            <td>{v.result.value.toString()}</td>
           </tr>
         ))}
       </tbody>

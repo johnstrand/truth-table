@@ -1,75 +1,74 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "./Components/Table";
-import Visualize from "./Components/Visualize";
 import { evaluate } from "./Utils/Evaluation";
-import { parse, Syntax } from "./Utils/Parser";
+import { parse } from "./Utils/Parser";
 import { TruthTable } from "./Utils/Types";
 import { createGenerator } from "./Utils/ValueSource";
 import "./App.css";
+import { useDebouncedState } from "./Utils/Hooks";
+import Editor from "./Components/Editor";
 
 function App() {
-  const [code, setCode] = useState(() => {
-    try {
-      const preload = window.location.hash.substring(1);
-      return preload ? window.atob(preload) : "";
-    } catch (err) {
-      // TODO: Error handling
-      window.location.hash = "";
-      return "";
-    }
-  });
-
   const [table, setTable] = useState<TruthTable>();
-  const [tree, setTree] = useState<Syntax>();
+  const [error, setError] = useState("");
+
+  const [code, setCode] = useDebouncedState("", 500);
 
   const parseExpression = () => {
-    const { tree: _tree, identifiers } = parse(code);
-    const values = createGenerator(identifiers);
-    const _table: TruthTable = {
-      columns: identifiers,
-      variants: [],
-    };
-
-    while (!values.done()) {
-      const items = values.next();
-      const result = evaluate(_tree, items);
-      _table.variants.push({
-        values: items,
-        result,
-      });
+    if (!code) {
+      return;
     }
+    setError("");
+    try {
+      const { tree, identifiers } = parse(code);
+      const values = createGenerator(identifiers);
+      const _table: TruthTable = {
+        columns: identifiers,
+        variants: [],
+      };
+      while (!values.done()) {
+        const items = values.next();
+        const result = evaluate(tree, items);
+        _table.variants.push({
+          values: items,
+          result,
+        });
+      }
 
-    // TODO: Error handling
-
-    setTable(_table);
-    setTree(_tree);
+      setTable(_table);
+    } catch (err) {
+      setError((err as Error).message);
+    }
   };
 
-  const updateCode = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const {
-      currentTarget: { value },
-    } = e;
-    window.location.hash = window.btoa(value);
-    setCode(value);
-  };
+  useEffect(parseExpression, [code]);
 
   return (
     <div>
       <div>
-        <textarea
-          cols={50}
-          rows={10}
-          onChange={updateCode}
-          value={code}
-        ></textarea>
+        <span>Operators (in order of precedence):</span>
+        <ul className="operator-list">
+          <li>NOT: !</li>
+          <li>AND: & (&& is also permitted)</li>
+          <li>XOR: ^</li>
+          <li>OR: | (|| is also permitted)</li>
+        </ul>
+        <span>
+          Statements may be grouped with ( ). Anything that isn't an operator,
+          parenthesis, or whitespace will be treated as a variable
+        </span>
       </div>
+      <div></div>
       <div>
+        <div>
+          <Editor onChange={setCode} />
+        </div>
         <button onClick={parseExpression} disabled={!code}>
           Evaluate
         </button>
+        {error && <span className="error">{error}</span>}
       </div>
       <div>{table && <Table table={table} />}</div>
-      <div>{tree && <Visualize syntax={tree} />}</div>
     </div>
   );
 }
