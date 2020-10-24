@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5a11f2abb1c1f698f40af4e1327bc092",
+    "revision": "da04c38b49a72090d30f15a6bd812fce",
     "url": "/truth-table/index.html"
   },
   {
