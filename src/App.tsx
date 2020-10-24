@@ -63,9 +63,6 @@ function App() {
         <div>
           <Editor onChange={setCode} />
         </div>
-        <button onClick={parseExpression} disabled={!code}>
-          Evaluate
-        </button>
         {error && <span className="error">{error}</span>}
       </div>
       <div>{table && <Table table={table} />}</div>
