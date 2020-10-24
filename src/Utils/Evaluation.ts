@@ -1,4 +1,4 @@
-import { State, Result, Syntax } from "./Types";
+import { State, Result, Syntax, BinaryOperationReducer } from "./Types";
 
 const binaryOperation = (
   label: string,
@@ -17,30 +17,19 @@ const binaryOperation = (
   };
 };
 
-export const evaluate = (tree: Syntax, state: State): Result => {
-  if (tree.type === "AND") {
-    return binaryOperation(
-      "AND",
+const binaryOperationReducers: BinaryOperationReducer = {
+  AND: (a, b) => a && b,
+  OR: (a, b) => a || b,
+  XOR: (a, b) => a !== b,
+};
 
-      tree.expressions,
-      state,
-      (a, b) => a && b,
-      tree.sequence
-    );
-  } else if (tree.type === "OR") {
+export const evaluate = (tree: Syntax, state: State): Result => {
+  if (tree.type === "AND" || tree.type === "OR" || tree.type === "XOR") {
     return binaryOperation(
-      "OR",
+      tree.type,
       tree.expressions,
       state,
-      (a, b) => a || b,
-      tree.sequence
-    );
-  } else if (tree.type === "XOR") {
-    return binaryOperation(
-      "XOR",
-      tree.expressions,
-      state,
-      (a, b) => a !== b,
+      binaryOperationReducers[tree.type],
       tree.sequence
     );
   } else if (tree.type === "NOT") {
