@@ -73,6 +73,7 @@ export const createTokenStream = (code: string): TokenStream => {
     expect<T extends Token>(type: T["type"]): T {
       const token = this.next();
       if (token.type !== type) {
+        // TODO: Improve errror message
         throw new Error(`Expected ${type}, found ${token.type}`);
       }
       return token as T;
