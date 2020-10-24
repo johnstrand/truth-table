@@ -2,19 +2,17 @@ import { State, Result, Syntax } from "./Types";
 
 const binaryOperation = (
   label: string,
-  left: Syntax,
-  right: Syntax,
+  expressions: Syntax[],
   state: State,
   operation: (a: boolean, b: boolean) => boolean,
   sequence: number
 ) => {
-  const _left = evaluate(left, state);
-  const _right = evaluate(right, state);
+  const evaluated = expressions.map((expr) => evaluate(expr, state));
 
   return {
     label,
-    children: [_left, _right],
-    value: operation(_left.value, _right.value),
+    children: evaluated,
+    value: evaluated.map((e) => e.value).reduce(operation),
     sequence,
   };
 };
@@ -23,8 +21,8 @@ export const evaluate = (tree: Syntax, state: State): Result => {
   if (tree.type === "AND") {
     return binaryOperation(
       "AND",
-      tree.left,
-      tree.right,
+
+      tree.expressions,
       state,
       (a, b) => a && b,
       tree.sequence
@@ -32,8 +30,7 @@ export const evaluate = (tree: Syntax, state: State): Result => {
   } else if (tree.type === "OR") {
     return binaryOperation(
       "OR",
-      tree.left,
-      tree.right,
+      tree.expressions,
       state,
       (a, b) => a || b,
       tree.sequence
@@ -41,8 +38,7 @@ export const evaluate = (tree: Syntax, state: State): Result => {
   } else if (tree.type === "XOR") {
     return binaryOperation(
       "XOR",
-      tree.left,
-      tree.right,
+      tree.expressions,
       state,
       (a, b) => a !== b,
       tree.sequence

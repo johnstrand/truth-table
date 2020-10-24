@@ -9,19 +9,28 @@ export const parse = (code: string) => {
     next: () => Syntax,
     type: BinaryTokenType
   ) => (): Syntax => {
-    let left = next();
+    const left = next();
+    const binary = {
+      sequence: left.sequence,
+      type,
+      expressions: [left],
+    };
+
     let t: Token | undefined;
 
     while (!tokens.eof() && (t = tokens.match(type))) {
+      /*
       left = {
         sequence: t.sequence,
         type,
         left,
         right: next(),
       };
+      */
+      binary.expressions.push(next());
     }
 
-    return left;
+    return binary.expressions.length === 1 ? binary.expressions[0] : binary;
   };
 
   const ident = (): Syntax => {

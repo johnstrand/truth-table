@@ -52,8 +52,7 @@ export interface IdentToken extends Token {
 interface BinarySyntax {
   sequence: number;
   type: Extract<SyntaxKind, "AND" | "OR" | "XOR">;
-  left: Syntax;
-  right: Syntax;
+  expressions: Syntax[];
 }
 
 interface IdentifierSyntax {
