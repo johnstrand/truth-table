@@ -5,7 +5,8 @@ const binaryOperation = (
   left: Syntax,
   right: Syntax,
   state: State,
-  operation: (a: boolean, b: boolean) => boolean
+  operation: (a: boolean, b: boolean) => boolean,
+  sequence: number
 ) => {
   const _left = evaluate(left, state);
   const _right = evaluate(right, state);
@@ -14,6 +15,7 @@ const binaryOperation = (
     label,
     children: [_left, _right],
     value: operation(_left.value, _right.value),
+    sequence,
   };
 };
 
@@ -24,7 +26,8 @@ export const evaluate = (tree: Syntax, state: State): Result => {
       tree.left,
       tree.right,
       state,
-      (a, b) => a && b
+      (a, b) => a && b,
+      tree.sequence
     );
   } else if (tree.type === "OR") {
     return binaryOperation(
@@ -32,7 +35,8 @@ export const evaluate = (tree: Syntax, state: State): Result => {
       tree.left,
       tree.right,
       state,
-      (a, b) => a || b
+      (a, b) => a || b,
+      tree.sequence
     );
   } else if (tree.type === "XOR") {
     return binaryOperation(
@@ -40,7 +44,8 @@ export const evaluate = (tree: Syntax, state: State): Result => {
       tree.left,
       tree.right,
       state,
-      (a, b) => a !== b
+      (a, b) => a !== b,
+      tree.sequence
     );
   } else if (tree.type === "NOT") {
     const result = evaluate(tree.expression, state);
@@ -48,12 +53,14 @@ export const evaluate = (tree: Syntax, state: State): Result => {
       label: "NOT",
       value: !result.value,
       children: [result],
+      sequence: tree.sequence,
     };
   } else if (tree.type === "IDENT") {
     return {
       label: `${tree.name} = ${state[tree.name]}`,
       value: state[tree.name],
       children: [],
+      sequence: tree.sequence,
     };
   } else {
     throw new Error(`Unknown type ${tree.type}`);

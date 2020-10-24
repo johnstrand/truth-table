@@ -6,6 +6,7 @@ export type Result = {
   children: Result[];
   value: boolean;
   label: string;
+  sequence: number;
 };
 
 export type Variant = {
@@ -21,7 +22,7 @@ export type TruthTable = {
 export type TokenStream = {
   next(): Token;
   eof(): boolean;
-  match(type: TokenType): boolean;
+  match(type: TokenType): Token | undefined;
   expect<T extends Token>(type: T["type"]): T;
 };
 
@@ -35,10 +36,13 @@ export type TokenType =
   | "IDENT"
   | "EOF";
 
+export type BinaryTokenType = Extract<TokenType, "AND" | "OR" | "XOR">;
+
 export type SyntaxKind = TokenType;
 
 export interface Token {
   type: TokenType;
+  sequence: number;
 }
 
 export interface IdentToken extends Token {
@@ -46,17 +50,20 @@ export interface IdentToken extends Token {
 }
 
 interface BinarySyntax {
+  sequence: number;
   type: Extract<SyntaxKind, "AND" | "OR" | "XOR">;
   left: Syntax;
   right: Syntax;
 }
 
 interface IdentifierSyntax {
+  sequence: number;
   type: Extract<SyntaxKind, "IDENT">;
   name: string;
 }
 
 interface UnarySyntax {
+  sequence: number;
   type: Extract<SyntaxKind, "NOT">;
   expression: Syntax;
 }

@@ -1,58 +1,27 @@
 import { createTokenStream } from "./Tokenizer";
-import { Syntax, Token, IdentToken } from "./Types";
+import { Syntax, Token, IdentToken, BinaryTokenType } from "./Types";
 
 export const parse = (code: string) => {
   const identifiers = new Set<string>();
   const tokens = createTokenStream(code);
 
-  const or = (): Syntax => {
-    let left = xor();
-    while (!tokens.eof() && tokens.match("OR")) {
+  const binarySyntax = (
+    next: () => Syntax,
+    type: BinaryTokenType
+  ) => (): Syntax => {
+    let left = next();
+    let t: Token | undefined;
+
+    while (!tokens.eof() && (t = tokens.match(type))) {
       left = {
-        type: "OR",
+        sequence: t.sequence,
+        type,
         left,
-        right: xor(),
+        right: next(),
       };
     }
 
     return left;
-  };
-
-  const xor = (): Syntax => {
-    let left = and();
-    while (!tokens.eof() && tokens.match("XOR")) {
-      left = {
-        type: "XOR",
-        left,
-        right: and(),
-      };
-    }
-
-    return left;
-  };
-
-  const and = (): Syntax => {
-    let left = not();
-    while (!tokens.eof() && tokens.match("AND")) {
-      left = {
-        type: "AND",
-        left,
-        right: not(),
-      };
-    }
-
-    return left;
-  };
-
-  const not = (): Syntax => {
-    if (tokens.match("NOT")) {
-      return {
-        type: "NOT",
-        expression: not(),
-      };
-    }
-
-    return ident();
   };
 
   const ident = (): Syntax => {
@@ -62,15 +31,33 @@ export const parse = (code: string) => {
       return expr;
     }
 
-    const { name } = tokens.expect<IdentToken>("IDENT");
+    const { name, sequence } = tokens.expect<IdentToken>("IDENT");
 
     identifiers.add(name);
 
     return {
       type: "IDENT",
       name,
+      sequence,
     };
   };
+
+  const not = (): Syntax => {
+    const t = tokens.match("NOT");
+    if (t) {
+      return {
+        type: "NOT",
+        expression: not(),
+        sequence: t.sequence,
+      };
+    }
+
+    return ident();
+  };
+
+  const and = binarySyntax(not, "AND");
+  const xor = binarySyntax(and, "XOR");
+  const or = binarySyntax(xor, "OR");
 
   const tree = or();
 

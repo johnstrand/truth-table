@@ -42,6 +42,7 @@ const isIdent = (text: string) => {
 export const createTokenStream = (code: string): TokenStream => {
   const stream = createCharStream(code);
   const cache: Token[] = [];
+  let seq = 1;
   return {
     eof() {
       return stream.eof() && cache.length === 0;
@@ -51,8 +52,9 @@ export const createTokenStream = (code: string): TokenStream => {
       const isMatch = token.type === type;
       if (!isMatch) {
         cache.push(token);
+        return;
       }
-      return isMatch;
+      return token;
     },
     expect<T extends Token>(type: T["type"]): T {
       const token = this.next();
@@ -71,34 +73,41 @@ export const createTokenStream = (code: string): TokenStream => {
       if (this.eof()) {
         return {
           type: "EOF",
+          sequence: seq++,
         };
       }
 
       if (stream.match("(")) {
         return {
           type: "LPAREN",
+          sequence: seq++,
         };
       } else if (stream.match(")")) {
         return {
           type: "RPAREN",
+          sequence: seq++,
         };
       } else if (stream.match("&")) {
         stream.match("&"); // Permit &&
         return {
           type: "AND",
+          sequence: seq++,
         };
       } else if (stream.match("|")) {
         stream.match("|"); // Permit ||
         return {
           type: "OR",
+          sequence: seq++,
         };
       } else if (stream.match("!")) {
         return {
           type: "NOT",
+          sequence: seq++,
         };
       } else if (stream.match("^")) {
         return {
           type: "XOR",
+          sequence: seq++,
         };
       } else {
         const ident: string[] = [];
@@ -108,6 +117,7 @@ export const createTokenStream = (code: string): TokenStream => {
         return {
           type: "IDENT",
           name: ident.join(""),
+          sequence: seq++,
         };
       }
     },

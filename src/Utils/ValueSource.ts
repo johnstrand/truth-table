@@ -12,7 +12,7 @@ export const createGenerator = (identifiers: string[]) => {
       for (let bit = 1, index = 0; bit < variants; bit *= 2, index++) {
         const name = identifiers[index];
         const value = (_variant & bit) > 0;
-        values[name] = value;
+        values[name] = !value;
       }
       return values;
     },
