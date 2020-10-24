@@ -1,0 +1,1 @@
+{"version":3,"sources":["App.css"],"names":[],"mappings":"AAAA,OACE,SAAU,CACV,iBACF,CAEA,eACE,iCACF,CAEA,cACE,oBACF","file":"main.1c8cc3f7.chunk.css","sourcesContent":[".error {\r\n  color: red;\r\n  padding-left: 10px;\r\n}\r\n\r\n.operator-list {\r\n  font-family: \"Fira Code\", monospace;\r\n}\r\n\r\n.explain-tree {\r\n  list-style-type: none;\r\n}\r\n"]}
