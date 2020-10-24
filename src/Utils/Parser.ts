@@ -16,17 +16,7 @@ export const parse = (code: string) => {
       expressions: [left],
     };
 
-    let t: Token | undefined;
-
-    while (!tokens.eof() && (t = tokens.match(type))) {
-      /*
-      left = {
-        sequence: t.sequence,
-        type,
-        left,
-        right: next(),
-      };
-      */
+    while (!tokens.eof() && tokens.match(type)) {
       binary.expressions.push(next());
     }
 
