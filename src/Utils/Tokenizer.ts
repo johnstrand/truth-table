@@ -64,7 +64,7 @@ export const createTokenStream = (code: string): TokenStream => {
       return token as T;
     },
     next() {
-      if (cache.length) {
+      if (cache.length > 0) {
         return cache.shift() as Token;
       }
       while (isWhitespace(stream.peek()) && !stream.eof()) {

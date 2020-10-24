@@ -38,8 +38,6 @@ export type TokenType =
 
 export type BinaryTokenType = Extract<TokenType, "AND" | "OR" | "XOR">;
 
-export type SyntaxKind = TokenType;
-
 export interface Token {
   type: TokenType;
   sequence: number;
@@ -51,19 +49,19 @@ export interface IdentToken extends Token {
 
 interface BinarySyntax {
   sequence: number;
-  type: Extract<SyntaxKind, "AND" | "OR" | "XOR">;
+  type: Extract<TokenType, "AND" | "OR" | "XOR">;
   expressions: Syntax[];
 }
 
 interface IdentifierSyntax {
   sequence: number;
-  type: Extract<SyntaxKind, "IDENT">;
+  type: Extract<TokenType, "IDENT">;
   name: string;
 }
 
 interface UnarySyntax {
   sequence: number;
-  type: Extract<SyntaxKind, "NOT">;
+  type: Extract<TokenType, "NOT">;
   expression: Syntax;
 }
 
