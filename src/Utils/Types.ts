@@ -38,6 +38,8 @@ export type TokenType =
 
 export type BinaryTokenType = Extract<TokenType, "AND" | "OR" | "XOR">;
 
+export type SingleTokenType<T extends TokenType> = Extract<TokenType, T>;
+
 export type BinaryOperationReducer = {
   [T in BinaryTokenType]: (acc: boolean, cur: boolean) => boolean;
 };
@@ -59,13 +61,13 @@ interface BinarySyntax {
 
 interface IdentifierSyntax {
   sequence: number;
-  type: Extract<TokenType, "IDENT">;
+  type: SingleTokenType<"IDENT">;
   name: string;
 }
 
 interface UnarySyntax {
   sequence: number;
-  type: Extract<TokenType, "NOT">;
+  type: SingleTokenType<"NOT">;
   expression: Syntax;
 }
 
