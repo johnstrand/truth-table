@@ -1,15 +1,19 @@
 import { TokenStream, Token, TokenType } from "./Types";
 
 type CharStream = {
+  previous(): string;
   next(): string;
   peek(): string;
   eof(): boolean;
-  match(char: string): boolean;
+  match(...char: string[]): boolean;
 };
 
 const createCharStream = (text: string): CharStream => {
   let index = 0;
   return {
+    previous() {
+      return text.charAt(index - 1);
+    },
     next() {
       return this.eof() ? "" : text.charAt(index++);
     },
@@ -19,8 +23,9 @@ const createCharStream = (text: string): CharStream => {
     eof() {
       return index >= text.length;
     },
-    match(char: string) {
-      if (char === this.peek()) {
+    match(...char: string[]) {
+      const next = this.peek();
+      if (char.some((c) => c === next)) {
         this.next();
         return true;
       }
@@ -29,17 +34,26 @@ const createCharStream = (text: string): CharStream => {
   };
 };
 
-const isWhitespace = (text: string) => {
-  return text.length === 0 || text.match(/\s/);
-};
+const operators = new Map<string, TokenType>([
+  ["|", "OR"],
+  ["&", "AND"],
+  ["(", "LPAREN"],
+  [")", "RPAREN"],
+  ["!", "NOT"],
+  ["^", "XOR"],
+]);
 
-const operators = new Set(["|", "&", "(", ")", "!", "^"]);
-
-const isIdent = (text: string) => {
-  return text.length > 0 && !isWhitespace(text) && !operators.has(text);
-};
+const operatorKeys = Array.from(operators.keys());
 
 export const createTokenStream = (code: string): TokenStream => {
+  const isWhitespace = (text: string) => {
+    return text.length === 0 || text.match(/\s/);
+  };
+
+  const isIdent = (text: string) => {
+    return text.length > 0 && !isWhitespace(text) && !operators.has(text);
+  };
+
   const stream = createCharStream(code);
   const cache: Token[] = [];
   let seq = 1;
@@ -67,9 +81,11 @@ export const createTokenStream = (code: string): TokenStream => {
       if (cache.length > 0) {
         return cache.shift() as Token;
       }
+
       while (isWhitespace(stream.peek()) && !stream.eof()) {
         stream.next();
       }
+
       if (this.eof()) {
         return {
           type: "EOF",
@@ -77,49 +93,26 @@ export const createTokenStream = (code: string): TokenStream => {
         };
       }
 
-      if (stream.match("(")) {
-        return {
-          type: "LPAREN",
-          sequence: seq++,
-        };
-      } else if (stream.match(")")) {
-        return {
-          type: "RPAREN",
-          sequence: seq++,
-        };
-      } else if (stream.match("&")) {
-        stream.match("&"); // Permit &&
-        return {
-          type: "AND",
-          sequence: seq++,
-        };
-      } else if (stream.match("|")) {
-        stream.match("|"); // Permit ||
-        return {
-          type: "OR",
-          sequence: seq++,
-        };
-      } else if (stream.match("!")) {
-        return {
-          type: "NOT",
-          sequence: seq++,
-        };
-      } else if (stream.match("^")) {
-        return {
-          type: "XOR",
-          sequence: seq++,
-        };
-      } else {
-        const ident: string[] = [];
-        while (isIdent(stream.peek())) {
-          ident.push(stream.next());
+      if (stream.match(...operatorKeys)) {
+        const operator = stream.previous();
+        if (operator === "|" || operator === "&") {
+          stream.match(operator);
         }
         return {
-          type: "IDENT",
-          name: ident.join(""),
+          type: operators.get(operator) as TokenType,
           sequence: seq++,
         };
       }
+
+      const ident: string[] = [];
+      while (isIdent(stream.peek())) {
+        ident.push(stream.next());
+      }
+      return {
+        type: "IDENT",
+        name: ident.join(""),
+        sequence: seq++,
+      };
     },
   };
 };
