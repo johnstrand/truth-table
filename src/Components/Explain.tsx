@@ -1,4 +1,5 @@
 import React from "react";
+import { id } from "../Utils/Functions";
 import { Result } from "../Utils/Types";
 
 interface Props {
@@ -11,9 +12,7 @@ const Explain = ({ result }: Props) => {
       <li className="explain-tree">
         {result.label} {result.children.length > 0 && ` = ${result.value}`}
         {result.children.length > 0 &&
-          result.children.map((c) => (
-            <Explain key={Math.random()} result={c} />
-          ))}
+          result.children.map((c) => <Explain key={id()} result={c} />)}
       </li>
     </ul>
   );
