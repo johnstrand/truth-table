@@ -48,6 +48,7 @@ export type BinaryOperationReducer = {
 export interface Token {
   type: TokenType;
   sequence: number;
+  stringify(): string;
 }
 
 export interface IdentToken extends Token {

@@ -75,7 +75,7 @@ export const createTokenStream = (code: string): TokenStream => {
       const token = this.next();
       if (token.type !== type) {
         // TODO: Improve errror message
-        throw new Error(`Expected ${type}, found ${token.type}`);
+        throw new Error(`Expected ${type}, found ${token.stringify()}`);
       }
       return token as T;
     },
@@ -92,6 +92,9 @@ export const createTokenStream = (code: string): TokenStream => {
         return {
           type: "EOF",
           sequence: seq++,
+          stringify() {
+            return "End of Statement";
+          },
         };
       }
 
@@ -108,6 +111,10 @@ export const createTokenStream = (code: string): TokenStream => {
         return {
           type: operators.get(operator) as TokenType,
           sequence: seq++,
+          stringify() {
+            // TODO: Improve error reporting
+            return this.type;
+          },
         };
       }
 
@@ -119,6 +126,9 @@ export const createTokenStream = (code: string): TokenStream => {
         type: "IDENT",
         name: ident.join(""),
         sequence: seq++,
+        stringify() {
+          return `identifier ${ident.join("")}`;
+        },
       };
     },
   };
